@@ -31,15 +31,15 @@ def reserve_timeslots(browser=None):
 	browser.get("https://www.lafitness.com/Pages/ClubReservation.aspx?clubID=482")
 
 	# If we're not at the bottom of the hour, wait the remaining seconds
-	# if datetime.now().second > 0 or datetime.now().minute != 0:
-	# 	print(f"Waiting to refresh, time is currently {datetime.now()}\n")
-	# 	now = datetime.now()
+	if datetime.now().second > 0 or datetime.now().minute != 0:
+		print(f"Waiting to refresh, time is currently {datetime.now()}\n")
+		now = datetime.now()
 
-	# 	wait_seconds = 60 - now.second
-	# 	print(f"Waiting {wait_seconds} seconds")
-	# 	sleep(wait_seconds)
-	# 	browser.refresh()
-	# 	print(f"Refreshed browser after waiting {wait_seconds} seconds\n")
+		wait_seconds = 60 - now.second
+		print(f"Waiting {wait_seconds} seconds")
+		sleep(wait_seconds)
+		browser.refresh()
+		print(f"Refreshed browser after waiting {wait_seconds} seconds\n")
 
 	# The way the gym scheduling works is such that you book two days in advance
 	# and weekend hours are different from weekday	
