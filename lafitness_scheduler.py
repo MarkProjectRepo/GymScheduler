@@ -70,13 +70,13 @@ def reserve_timeslots(browser=None):
 			OK_button = list(filter(lambda a:a.text == "OK", browser.find_elements_by_tag_name("button")))[-1]
 			OK_button.click()
 			output.append(f"\nScheduled a task {str(datetime.now())}\n at {booked}")
-
+			browser.save_screenshot(f"screenshots/{datetime.now()}.png")
 			# When we've scheduled something, write it to our successful schedule file
 			with open(SCHEDULED_FILE, "a+") as f:
 				for elem in output:
 					f.write(elem)
 			break
-			
+
 	browser.close()
 
 if __name__ == "__main__":
