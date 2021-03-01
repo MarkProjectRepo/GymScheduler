@@ -12,12 +12,10 @@ import sys
 sys.stdout = open("C:/Users/MTisME/Documents/Python Scripts/GymScheduler/scheduling_log.txt", 'a+')
 sys.stderr = open("C:/Users/MTisME/Documents/Python Scripts/GymScheduler/scheduling_log.txt", 'a+')
 def reserve_timeslots(browser=None):
-	was_none = True
 	if not browser:
 		opts = FirefoxOptions()
 		opts.add_argument("--headless")
 		browser = webdriver.Firefox(options=opts)
-		was_none = False
 	
 	browser.get("https://lafitness.com")
 
@@ -33,15 +31,15 @@ def reserve_timeslots(browser=None):
 	browser.get("https://www.lafitness.com/Pages/ClubReservation.aspx?clubID=482")
 
 	# If we're not at the bottom of the hour, wait the remaining seconds
-	if datetime.now().second > 0 or datetime.now().minute != 0:
-		print(f"Waiting to refresh, time is currently {datetime.now()}\n")
-		now = datetime.now()
+	# if datetime.now().second > 0 or datetime.now().minute != 0:
+	# 	print(f"Waiting to refresh, time is currently {datetime.now()}\n")
+	# 	now = datetime.now()
 
-		wait_seconds = 60 - now.second
-		print(f"Waiting {wait_seconds} seconds")
-		sleep(wait_seconds)
-		browser.refresh()
-		print(f"Refreshed browser after waiting {wait_seconds} seconds\n")
+	# 	wait_seconds = 60 - now.second
+	# 	print(f"Waiting {wait_seconds} seconds")
+	# 	sleep(wait_seconds)
+	# 	browser.refresh()
+	# 	print(f"Refreshed browser after waiting {wait_seconds} seconds\n")
 
 	# The way the gym scheduling works is such that you book two days in advance
 	# and weekend hours are different from weekday	
@@ -54,30 +52,31 @@ def reserve_timeslots(browser=None):
 	print(f"Checking booking times for {time_to_book}... \n")
 	booked = ""
 	for timeslot in time_to_book:
-		x = list(filter(lambda a: a.text.startswith(timeslot) and not bool(re.search("\d{1,2}\/\d{1,2}\/\d{4}",a.text)) and "pm" in a.text.lower(), browser.find_elements_by_tag_name("tr")))[0]
+		x = list(filter(lambda a: a.text.startswith(timeslot) and not bool(re.search("\d{1,2}\/\d{1,2}\/\d{4}",a.text)) and "pm" in a.text.lower(), browser.find_elements_by_tag_name("tr")))
 		if x:
-			print(f"\n{x} ")
 			booked = timeslot
+			x = x[0]
 
-		output = []
-		print(f"Found a time slot...\n")
+			print(f"\n{x} ")
+			output = []
+			print(f"Found a time slot...\n")
 
-		# Given we found a timeslot, begin trying to book it
-		if x:
 			try:
 				x.find_element_by_tag_name("a").click()
 			except:
 				print("No <a>, oh well")
 				continue
+
 			OK_button = list(filter(lambda a:a.text == "OK", browser.find_elements_by_tag_name("button")))[-1]
 			OK_button.click()
 			output.append(f"\nScheduled a task {str(datetime.now())}\n at {booked}")
+
+			# When we've scheduled something, write it to our successful schedule file
+			with open(SCHEDULED_FILE, "a+") as f:
+				for elem in output:
+					f.write(elem)
 			break
-	
-	# When we've scheduled something, write it to our successful schedule file
-	with open(SCHEDULED_FILE, "a+") as f:
-		for elem in output:
-			f.write(elem)
+			
 	browser.close()
 
 if __name__ == "__main__":
